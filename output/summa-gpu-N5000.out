@@ -1,0 +1,23 @@
+rm -rf build summa
+CC -O3 -std=c++17 -Iinclude -DENABLE_CUDA -fopenmp -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/main.cpp -o build/gpu/main.o
+CC -O3 -std=c++17 -Iinclude -DENABLE_CUDA -fopenmp -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/summa_cpu.cpp -o build/gpu/summa_cpu.o
+CC -O3 -std=c++17 -Iinclude -DENABLE_CUDA -fopenmp -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/local_dgemm_cpu.cpp -o build/gpu/local_dgemm_cpu.o
+CC -O3 -std=c++17 -Iinclude -DENABLE_CUDA -fopenmp -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/verify.cpp -o build/gpu/verify.o
+nvcc -O3 -std=c++17 -Iinclude -DENABLE_CUDA -ccbin=CC -Xcompiler="-fopenmp" -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/summa_gpu.cu -o build/gpu/summa_gpu.o
+nvcc -O3 -std=c++17 -Iinclude -DENABLE_CUDA -ccbin=CC -Xcompiler="-fopenmp" -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -c src/local_dgemm_gpu.cu -o build/gpu/local_dgemm_gpu.o
+CC -O3 -std=c++17 -Iinclude -DENABLE_CUDA -fopenmp -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include build/gpu/main.o build/gpu/summa_cpu.o build/gpu/local_dgemm_cpu.o build/gpu/verify.o build/gpu/summa_gpu.o build/gpu/local_dgemm_gpu.o -o summa -L/opt/nvidia/hpc_sdk/Linux_x86_64/24.5/cuda/12.4/lib64 -lcudart
+Result of GPU when N is 5000, Number of thread is 8 and 1 GPU per rank
+ *** For P is 4 (2x2) and on 1 GPU node (4 GPUs)***
+Opts: N=5000 mode=gpu verify=1
+[GPU] N=5000 P=2 ranks=4
+  End-to-end  : 0.203549 s, 1228.21 GF/s
+  Compute-only: 0.0794721 s, 3145.76 GF/s
+VERIFY RESULT:  max C diff = 0
+RESULT: PASS (tolerance = 1e-05)
+ *** For P is 16 (4x4) and on 4 GPU nodes (16 GPUs)***
+Opts: N=5000 mode=gpu verify=1
+[GPU] N=5000 P=4 ranks=16
+  End-to-end  : 0.0939192 s, 2661.86 GF/s
+  Compute-only: 0.0304755 s, 8203.31 GF/s
+VERIFY RESULT:  max C diff = 0
+RESULT: PASS (tolerance = 1e-05)

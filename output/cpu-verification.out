@@ -1,0 +1,10 @@
+rm -rf summa src/*.o
+CC -O3 -std=c++17 -Iinclude -I/opt/cray/pe/mpich/8.1.30/ofi/gnu/12.3/include -fopenmp                   build/cpu/main.o build/cpu/summa_cpu.o build/cpu/local_dgemm_cpu.o build/cpu/verify.o -o summa
+CPU version verification result
+ *** N is 1000, P is 4 (2x2) Number of thread is 8 *** 
+Opts: N=1000 mode=cpu verify=1
+[CPU] N=1000 P=2x2 ranks=4
+  End-to-end  : 0.0553168 s, 36.1554 GF/s
+  Compute-only: 0.0492328 s, 40.6233 GF/s
+VERIFY RESULT:  max C diff = 0
+RESULT: PASS (tolerance = 1e-05)

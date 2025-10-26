@@ -1,0 +1,3 @@
+To compile on Perlmutter: 
+module load PrgEnv-gnu
+module load cudatoolkit
